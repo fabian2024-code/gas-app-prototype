@@ -5,7 +5,7 @@ exports.handler = async function(event, context) {
         const input = JSON.parse(event.body);
         if (!input.messages) return { statusCode: 400, body: JSON.stringify({ error: 'No messages provided' }) };
 
-        const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyC6Cr7qsVDmI9360m15pDfbWwRI-Shkpyo';
+        const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
             return { 
                 statusCode: 200, 

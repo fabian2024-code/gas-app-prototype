@@ -9,4 +9,7 @@ check_transactions.php
 
 # OS files
 .DS_Store
-Thumbs.db
+# Project sensitive
+api/config.php
+api/ai_chat.php
+netlify/functions/chat.js

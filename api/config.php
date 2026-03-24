@@ -6,6 +6,6 @@
 // 1. Ve a https://aistudio.google.com/app/apikey e inicia sesión
 // 2. Crea una clave de API gratuita
 // 3. Cópiala y pégala abajo (reemplazando INGRESA_TU_API_KEY_AQUI, manteniendo las comillas simples)
-define('GEMINI_API_KEY', 'AIzaSyDMZ3QILJsQDVwHDHlCGj1_7zVkBKQ9fyw');
+define('GEMINI_API_KEY', 'INGRESA_TU_NUEVA_API_KEY_AQUI');
 
 ?>
