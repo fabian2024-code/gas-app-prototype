@@ -24,7 +24,7 @@ if (empty($apiKey) || $apiKey === 'INGRESA_TU_API_KEY_AQUI') {
     exit;
 }
 
-$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" . $apiKey;
+$url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" . $apiKey;
 
 $sysPrompt = "Eres el asistente inteligente de ventas de GasControl, distribuidor oficial de Gasco.
 Vendes cilindros de 5 kg ($5,200), 11 kg ($9,800), 15 kg ($12,500) y 45 kg ($32,000).
