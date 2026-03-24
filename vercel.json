@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/chat.js": {
+      "runtime": "vercel-nodejs@20"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/chat",
+      "dest": "/api/chat.js"
+    }
+  ]
+}
