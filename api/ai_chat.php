@@ -24,7 +24,7 @@ if (empty($apiKey) || $apiKey === 'INGRESA_TU_API_KEY_AQUI') {
     exit;
 }
 
-$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" . $apiKey;
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" . $apiKey;
 
 $sysPrompt = "Eres el asistente inteligente de ventas de GasControl, distribuidor oficial de Gasco.
 Vendes cilindros de 5 kg ($5,200), 11 kg ($9,800), 15 kg ($12,500) y 45 kg ($32,000).
@@ -37,13 +37,13 @@ Pregunta estos datos paso a paso conversando con el cliente de forma natural, no
 Cuando tengas la confirmación de esos 3 datos, finaliza el proceso reproduciendo EXACTAMENTE Y ÚNICAMENTE este bloque JSON, sin escribir ni una sola letra o saludo extra antes ni después de las llaves:
 {\"action\": \"ORDER\", \"product\": \"[TAMAÑO]\", \"address\": \"[DIRECCION]\", \"phone\": \"[TELEFONO]\"}";
 
+$fakeHistory = [
+    ["role" => "user", "parts" => [["text" => "INSTRUCCIÓN DEL SISTEMA: " . $sysPrompt]]],
+    ["role" => "model", "parts" => [["text" => "Entendido perfectamente. Actuaré estrictamente como el vendedor de GasControl detallado en la instrucción."]]]
+];
+
 $data = [
-    "system_instruction" => [
-        "parts" => [
-            ["text" => $sysPrompt]
-        ]
-    ],
-    "contents" => $input['messages'],
+    "contents" => array_merge($fakeHistory, $input['messages']),
     "generationConfig" => [
         "temperature" => 0.3
     ]
