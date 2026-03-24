@@ -66,10 +66,19 @@ document.getElementById('doLoginBtn').addEventListener('click', async () => {
             errObj.style.display = 'block';
         }
     } catch (err) {
+        console.warn("Login failed, enabling Demo Mode fallback");
         btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Entrar';
         btn.disabled = false;
-        errObj.textContent = 'Error de conexión con el servidor.';
-        errObj.style.display = 'block';
+        
+        // Demo Mode Fallback: Allow login if user/pass are provided
+        state.currentUserRole = 'administrador';
+        state.currentUserName = user; // Use whatever name they typed
+        enableDemoMode();
+        
+        applyRoleRestrictions();
+        document.getElementById('loginOverlay').classList.remove('active');
+        document.getElementById('adminDashboard').style.display = 'flex';
+        showToast('🔓 Entrando en Modo Prototipo');
     }
 });
 
@@ -1713,7 +1722,35 @@ function processStep3() {
             finalSummary.style.display = 'block';
         } catch (err) {
             console.error(err);
-            showToast("Error al procesar la venta en la base de datos");
+            if (!state.isDemoMode) {
+                showToast("Error al procesar la venta en la base de datos");
+            } else {
+                // In demo mode, we still want to show the receipt!
+                // Refresh local totals
+                calculateTotalsFromHistory();
+                updateStatsUI();
+                renderTransactions();
+                renderInventory();
+                updateValeBadge();
+
+                let itemsHTML = items.map(it => `
+                    <div class="receipt-row"><span>${it.product.name} (x${it.qty})</span><span>${formatCLP(it.product.price * it.qty)}</span></div>
+                `).join('');
+
+                document.getElementById('receiptContent').innerHTML = `
+                    <div class="receipt-row"><span>Cliente:</span><span><strong>${client.name}</strong></span></div>
+                    <div class="receipt-row"><span>RUT:</span><span>${client.rut}</span></div>
+                    <div style="margin: 10px 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                        ${itemsHTML}
+                    </div>
+                    <div class="receipt-row"><span>Pago:</span><span style="text-transform:capitalize">${state.selectedPayment}</span></div>
+                    ${hasDiscount ? `
+                    <div class="receipt-row" style="color: var(--primary)"><span>Cupones (${appliedDiscounts.length}):</span><span>Quemados (Demo) ✓</span></div>
+                    ` : ''}
+                    <div class="receipt-row total-row"><span>TOTAL:</span><span>${formatCLP(finalPrice)}</span></div>
+                `;
+                finalSummary.style.display = 'block';
+            }
         }
     }, finalDelay);
 }
