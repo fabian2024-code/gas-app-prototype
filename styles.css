@@ -830,8 +830,9 @@ body.light-mode .dropdown-item:hover { background: rgba(0,0,0,0.05); color: var(
     .payment-btn { padding: 10px 8px; font-size: 12px; }
     
     /* Cage card compacting */
-    .cage-card .card-header { flex-wrap: nowrap; align-items: center; gap: 8px; }
-    .cage-card .card-header h3 { font-size: 14px; white-space: nowrap; }
+    .cage-card .card-header { flex-wrap: wrap; align-items: center; gap: 6px; }
+    .cage-card .card-header h3 { font-size: 14px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cage-card .card-header > div { display: flex; gap: 6px; flex-shrink: 0; }
     .small-primary-btn { padding: 5px 9px; font-size: 10px; white-space: nowrap; }
     .cage-item { padding: 8px 10px; gap: 8px; }
     
