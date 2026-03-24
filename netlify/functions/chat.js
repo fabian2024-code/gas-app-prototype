@@ -65,3 +65,4 @@ Cuando tengas la confirmación de esos 3 datos, finaliza el proceso reproduciend
         return { statusCode: 500, body: JSON.stringify({ error: 'Excepción en el servidor', details: e.message }) };
     }
 };
+// Sincronización de variables de entorno forzada.
