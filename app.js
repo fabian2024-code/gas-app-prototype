@@ -1065,8 +1065,8 @@ function showStockModal() {
         
         card.innerHTML = `
             <div>
-                <div style="font-weight:700; font-size: 15px;">${p.nombre}</div>
-                <div style="font-size: 12px; color: var(--text-secondary);">${p.precio ? '$' + p.precio : 'Punto de Venta'}</div>
+                <div style="font-weight:700; font-size: 15px;">${p.name}</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">${p.price ? '$' + p.price.toLocaleString() : 'Punto de Venta'}</div>
             </div>
             <div class="stock-badge ${colorClass}" style="font-size: 16px;">
                 <i class="fa-solid fa-box"></i>
