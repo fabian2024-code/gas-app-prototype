@@ -42,8 +42,10 @@ Cuando tengas la confirmación de esos 3 datos, finaliza el proceso reproduciend
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            return { statusCode: 500, body: JSON.stringify({ error: 'Error de conexión con IA', details: errorData }) };
+            const errorText = await response.text();
+            let errorData;
+            try { errorData = JSON.parse(errorText); } catch(e) { errorData = errorText; }
+            return { statusCode: 500, body: JSON.stringify({ error: 'Error del servidor IA', details: errorData }) };
         }
 
         const json = await response.json();

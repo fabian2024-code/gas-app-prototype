@@ -778,7 +778,9 @@ async function processGeminiChat(text, thinkingId) {
         if(tb) chatBody.removeChild(tb);
         
         if (data.error && !data.botResponse) {
-            appendMessage('bot', '❌ Error de conexión: ' + data.error);
+            console.error("Detalle del error:", data.details);
+            const extra = data.details ? JSON.stringify(data.details).substring(0, 100) : '';
+            appendMessage('bot', '❌ Error: ' + data.error + ' ' + extra);
         } else {
             const botText = data.botResponse;
             
