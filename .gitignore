@@ -1,0 +1,12 @@
+# XAMPP & Temp Files
+*.log
+*.tmp
+alter_db_v1.php
+alter_db_v2.php
+check_users.php
+check_schema.php
+check_transactions.php
+
+# OS files
+.DS_Store
+Thumbs.db

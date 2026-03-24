@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GasControl - Punto de Venta</title>
+    <link rel="stylesheet" href="styles.css?v=4.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Login Section -->
+<div id="loginOverlay" class="login-page active">
+    <div class="login-wrapper">
+        <div class="login-brand-side">
+            <div class="brand-content">
+                <i class="fa-solid fa-fire-flame-curved main-logo-icon"></i>
+                <div class="brand-text">
+                    <h1>GasControl</h1>
+                    <p>Gestión Inteligente de Energía</p>
+                </div>
+            </div>
+            <div class="brand-footer">
+                <p>&copy; 2026 Gasco - Innovación en cada entrega</p>
+            </div>
+        </div>
+        
+        <div class="login-form-side glass-card">
+            <div class="form-header">
+                <h2>Bienvenido</h2>
+                <p>Ingresa tus credenciales para acceder al sistema</p>
+            </div>
+            
+            <div class="form-body">
+                <div class="input-group">
+                    <label>Usuario</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="loginUser" placeholder="admin, vendedor o repartidor">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="loginPass" placeholder="••••••••">
+                    </div>
+                </div>
+                
+                    <span>Pista: La clave es la misma palabra que el usuario</span>
+                
+                <button class="primary-btn login-submit-btn" id="doLoginBtn">
+                    <span>Iniciar Sesión</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                
+                <div id="loginError" class="login-error-msg"></div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="secondary-btn" id="loginChatBtn" style="background: none; border: 1px solid var(--border-color); width: 100%;">
+                        <i class="fa-solid fa-robot"></i> Pedir por Asistente (Bot)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="app-container" id="adminDashboard" style="display: none;">
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fa-solid fa-fire-flame-curved logo-icon"></i>
+                <h1>GasControl</h1>
+                <div id="demoIndicator" class="demo-badge" style="display: none;">
+                    <i class="fa-solid fa-cloud-slash"></i> Modo Prototipo
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="time" id="currentTime">12:00 p. m.</div>
+                <div class="user-menu-wrapper">
+                    <div class="user-profile-trigger" id="userProfileTrigger">
+                        <div class="avatar" id="userAvatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="user-details-mini">
+                            <span id="headerUserName">Admin</span>
+                            <small id="headerUserRole">Administrador</small>
+                        </div>
+                        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-title">Sesión Activa</div>
+                            <div class="dropdown-header-subtitle" id="dropdownUserEmail">Gestión de Perfil y Sistema</div>
+                        </div>
+                        <div class="dropdown-item" onclick="showToast('Función de foto próximamente')">
+                            <i class="fa-solid fa-camera"></i> Foto de Perfil
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <i class="fa-solid fa-arrows-rotate"></i> Cambiar Usuario
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item danger" id="headerLogoutBtn">
+                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                        </div>
+                    </div>
+                </div>
+                <button class="menu-toggle-btn" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Two-column layout -->
+    <main class="main-content">
+
+        <!-- Wizard Section (Now Centered) -->
+        <section class="wizard-section">
+            <div class="glass-card wizard-card">
+
+                <!-- Step Progress Bar -->
+                <div class="step-progress">
+                    <div class="step-dot active" id="dot1"><span>1</span><label>Cliente</label></div>
+                    <div class="step-line" id="line12"></div>
+                    <div class="step-dot" id="dot2"><span>2</span><label>Producto</label></div>
+                    <div class="step-line" id="line23"></div>
+                    <div class="step-dot" id="dot3"><span>3</span><label>Pago</label></div>
+                    <div class="step-line" id="line34"></div>
+                    <div class="step-dot" id="dot4"><span>4</span><label>Confirmacion</label></div>
+                </div>
+
+                <!-- STEP 1: RUT Check -->
+                <div class="wizard-step" id="step1">
+                    <div class="step-title">
+                        <i class="fa-solid fa-id-card step-icon"></i>
+                        <h2>Identificar Cliente</h2>
+                        <p>Ingresa el RUT del cliente para verificar si tiene convenio Gasco</p>
+                    </div>
+                    <div class="input-group">
+                        <label>RUT del Cliente</label>
+                        <div class="input-row">
+                            <input type="text" id="rutLookupInput" placeholder="12345678-9" maxlength="12">
+                            <button class="primary-btn" id="lookupRutBtn"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+                        </div>
+                        <div id="rutLookupResult" class="lookup-result" style="display:none;"></div>
+                    </div>
+                    <div class="vale-divider"><span>o también</span></div>
+                    <div class="quick-actions-row">
+                        <button class="vale-quick-btn" id="valeDirectBtn">
+                            <i class="fa-solid fa-truck-direct"></i>
+                            Venta Directa
+                        </button>
+                        <button class="vale-quick-btn secondary-quick" id="valeQuickBtn">
+                            <i class="fa-solid fa-ticket"></i>
+                            Venta por Vale
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 1b: Registration Form (hidden by default) -->
+                <div class="wizard-step" id="step1b" style="display:none;">
+                    <div class="step-title">
+                        <i class="fa-solid fa-user-plus step-icon" style="color: #3b82f6;"></i>
+                        <h2>Registrar en Gasco</h2>
+                        <p>Este cliente no esta registrado. Ingresa sus datos para inscribirlo.</p>
+                    </div>
+                    <div class="input-group">
+                        <label>RUT</label>
+                        <input type="text" id="regRutInput" placeholder="12345678-9" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Numero de Documento (Serie dorso carnet)</label>
+                        <input type="text" id="regDocInput" placeholder="Ej: A123456789">
+                    </div>
+                    <div class="wizard-actions">
+                        <button class="secondary-btn" id="cancelRegBtn"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+                        <button class="primary-btn" id="submitRegBtn"><i class="fa-solid fa-user-check"></i> Registrar e ir a Productos</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Product Selection -->
+                <div class="wizard-step" id="step2" style="display:none;">
+                    <div class="step-title">
+                        <i class="fa-solid fa-fire-flame-curved step-icon"></i>
+                        <h2>Seleccionar Producto</h2>
+                        <div class="client-badge" id="clientBadge"></div>
+                    </div>
+
+                    <div class="step-indicator-label">Cilindros Disponibles</div>
+                    <div class="product-grid" id="productGrid"></div>
+
+                    <div class="wizard-actions">
+                        <button class="secondary-btn" id="backToStep1Btn"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+                        <button class="primary-btn" id="goToStep2bBtn" disabled><i class="fa-solid fa-arrow-right"></i> Siguiente: Pago</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2b: Payment Selection -->
+                <div class="wizard-step" id="step2b" style="display:none;">
+                    <div class="step-title">
+                        <i class="fa-solid fa-wallet step-icon"></i>
+                        <h2>Medio de Pago</h2>
+                        <p>¿Cómo desea pagar el cliente?</p>
+                    </div>
+
+                    <div class="payment-grid">
+                        <button class="payment-btn" data-method="efectivo"><i class="fa-solid fa-money-bill"></i> Efectivo</button>
+                        <button class="payment-btn" data-method="tarjeta"><i class="fa-solid fa-credit-card"></i> Tarjeta</button>
+                        <button class="payment-btn" data-method="transferencia"><i class="fa-solid fa-building-columns"></i> Transferencia</button>
+                        <button class="payment-btn vale-pay-btn" data-method="vale"><i class="fa-solid fa-ticket"></i> Vale (Convenio)</button>
+                    </div>
+
+                    <div class="price-summary" id="priceSummary" style="display:none;">
+                        <div class="price-row">
+                            <span>Precio normal:</span>
+                            <span id="priceNormal" class="price-strike">-</span>
+                        </div>
+                        <div class="price-row discount" id="discountRow" style="display:none;">
+                            <span><i class="fa-solid fa-tag"></i> Descuento Gasco:</span>
+                            <span id="priceDiscount" style="color:var(--primary);">-$0</span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Total a cobrar:</span>
+                            <span id="priceFinal" class="final-price">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button class="secondary-btn" id="backToStep2Btn"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+                        <button class="primary-btn" id="goToStep3Btn" disabled><i class="fa-solid fa-arrow-right"></i> Confirmar Venta</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Confirmation + Auto-burn -->
+                <div class="wizard-step" id="step3" style="display:none;">
+                    <div class="step-title">
+                        <i class="fa-solid fa-circle-check step-icon" style="color: var(--success);"></i>
+                        <h2>Procesando Venta</h2>
+                    </div>
+
+                    <div class="burn-status-list" id="burnStatusList"></div>
+
+                    <div class="final-summary glass-card" id="finalSummary" style="display:none; margin-top:20px; padding: 20px;">
+                        <h3 style="margin-bottom:15px; text-align:center;">Recibo de Venta</h3>
+                        <div id="receiptContent"></div>
+                        <button class="primary-btn" id="newSaleBtn" style="width:100%; margin-top:20px; justify-content:center;">
+                            <i class="fa-solid fa-plus"></i> Nueva Venta
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Dashboard (Only visible for admin) -->
+    <section id="adminDashboardView" class="admin-dashboard" style="display: none;">
+        <div class="admin-header glass-card">
+            <div>
+                <h2 id="adminGreeting">¡Buenos días!</h2>
+                <p>Aquí está el resumen del rendimiento de tu negocio.</p>
+            </div>
+            <div class="admin-header-actions">
+                <button class="primary-btn" id="adminRefillBtn"><i class="fa-solid fa-truck-ramp-box"></i> Pedir Carga (Jaula)</button>
+            </div>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card glass-card" id="kpiVentas" onclick="expandKPI('ventas')" style="cursor: pointer;">
+                <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Ventas Hoy (Cilindros)</span>
+                    <span class="kpi-value" id="adminVentasHoy">0</span>
+                </div>
+            </div>
+            <div class="kpi-card glass-card" id="kpiIngresos" onclick="expandKPI('ingresos')" style="cursor: pointer;">
+                <div class="kpi-icon" style="color: var(--success); background: var(--success-bg);"><i class="fa-solid fa-wallet"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Ingresos del Día</span>
+                    <span class="kpi-value" id="adminIngresosHoy">$0</span>
+                </div>
+            </div>
+            <div class="kpi-card glass-card" id="kpiStock" onclick="expandKPI('stock')" style="cursor: pointer;">
+                <div class="kpi-icon" style="color: #f59e0b; background: rgba(245,158,11,0.15);"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Stock Crítico</span>
+                    <span class="kpi-value" id="adminStockBajo">0</span>
+                </div>
+            </div>
+            <div class="kpi-card glass-card" id="kpiPedidos" onclick="expandKPI('pedidos')" style="cursor: pointer;">
+                <div class="kpi-icon" style="color: #ef4444; background: rgba(239,68,68,0.15);"><i class="fa-solid fa-robot"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Pedidos Pendientes</span>
+                    <span class="kpi-value" id="adminPedidosPendientes">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-main-grid">
+            <div class="dash-widget glass-card" id="widgetLineChart">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-chart-bar"></i> Rendimiento de Ventas (Últimos Días)</h3>
+                    <button class="expand-btn" onclick="expandWidget('widgetLineChart')"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="widget-body" style="height: 300px;">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="dash-widget glass-card" id="widgetPieChart">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-chart-pie"></i> Medios de Pago Hoy</h3>
+                    <button class="expand-btn" onclick="expandWidget('widgetPieChart')"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="widget-body" style="height: 300px; display: flex; justify-content: center;">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="dash-widget glass-card" id="widgetGoals">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-bullseye"></i> Meta del Mes</h3>
+                    <button class="expand-btn" onclick="expandWidget('widgetGoals')"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="widget-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0;">
+                    <div class="goal-circle">
+                        <svg viewBox="0 0 36 36" class="circular-chart orange">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" id="goalCirclePath" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage" id="goalPercentageText">0%</text>
+                        </svg>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <div style="font-size: 14px; color: var(--text-secondary);">Progreso meta mensual (1,000 cilindros)</div>
+                        <div style="font-size: 20px; font-weight: 800; margin-top: 5px; color: var(--primary);" id="goalTextValue">0 / 1000</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-widget glass-card" id="widgetRanking">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-trophy"></i> Ranking T. Real (Top Vendedores)</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="expand-btn" title="Gestionar Personal" onclick="openStaffModal()"><i class="fa-solid fa-users-gear"></i></button>
+                        <button class="expand-btn" onclick="expandWidget('widgetRanking')"><i class="fa-solid fa-expand"></i></button>
+                    </div>
+                </div>
+                <div class="widget-body">
+                    <div class="ranking-list" id="adminRankingList">
+                        <!-- populated via JS -->
+                        <div class="empty-state">Agregando transacciones...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dash-widget glass-card" id="widgetZones">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-fire"></i> Zonas Calientes</h3>
+                    <button class="expand-btn" onclick="expandWidget('widgetZones')"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="widget-body">
+                    <ul class="zones-list" id="adminZonasList">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dash-widget glass-card" id="widgetRecent">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Actividad Reciente</h3>
+                    <button class="expand-btn" onclick="expandWidget('widgetRecent')"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="widget-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="timeline" id="adminTimeline">
+                        <div class="empty-state">No hay actividad reciente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Side Drawer (Right Panel) -->
+    <aside class="side-drawer" id="sideDrawer">
+        <div class="drawer-header">
+            <h3>Centro de Monitoreo</h3>
+            <button class="close-drawer-btn" id="closeDrawerBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-content">
+            <section class="summary-section">
+                <!-- Mi CuentaSection (Optimized) -->
+
+
+                <div class="stats-row">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon ventas-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Ventas Hoy</span>
+                            <span class="stat-value" id="totalSalesCount">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon total-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Recaudado</span>
+                            <span class="stat-value" id="totalSalesAmount">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-sales-card glass-card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin-bottom: 0;">Ventas Recientes</h3>
+            <button class="secondary-btn" style="padding: 4px 10px; font-size: 11px;" onclick="showAllSales()">
+                Ver Historial
+            </button>
+        </div>
+        <div class="transactions-list" id="recentSales">
+            <div class="empty-state">No hay ventas registradas hoy</div>
+        </div>
+    </div>
+
+                <div class="cage-card glass-card">
+        <div class="card-header">
+            <h3>Gestión de Jaula (Stock)</h3>
+            <div style="display: flex; gap: 8px;">
+                <button class="small-primary-btn" onclick="showStockModal()">
+                    <i class="fa-solid fa-boxes-stacked"></i> Ver Todo
+                </button>
+                <button class="small-primary-btn" id="refillCageBtn">
+                    <i class="fa-solid fa-truck-ramp-box"></i> Pedir Carga
+                </button>
+            </div>
+        </div>
+                    <div id="cageInventory" class="cage-inventory-list">
+                        <!-- Dynamic stock list -->
+                    </div>
+                </div>
+
+                <button class="close-register-btn" id="closeRegisterBtn">
+                    <i class="fa-solid fa-lock"></i> Realizar Cuadratura
+                </button>
+            </section>
+        </div>
+    </aside>
+
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- Modal Cuadratura -->
+    <div class="modal-overlay" id="cuadraturaModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Reporte de Cuadratura</h2>
+                <button class="close-modal-btn" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div id="cuponesSection" style="display:none; margin-top: 20px;">
+                <h4 style="color: var(--primary); margin-bottom: 12px;"><i class="fa-solid fa-tag"></i> Cupones Quemados del Dia</h4>
+                <div id="cuponesTable" style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="document.getElementById('cuadraturaModal').classList.remove('active')">Volver</button>
+                <button class="secondary-btn" id="exportCsvBtn"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
+                <button class="primary-btn" id="exportFullExcelBtn"><i class="fa-solid fa-file-excel"></i> Exportar Todo</button>
+                <button class="primary-btn" id="sendWhatsappBtn"><i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp</button>
+                <button class="danger-btn" id="closeTurnBtn"><i class="fa-solid fa-power-off"></i> Cerrar Turno</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Movimiento de Stock (Camion) -->
+    <div class="modal-overlay" id="cageModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Carga/Descarga de Camión</h2>
+                <button class="close-modal-btn" id="closeCageModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 20px;">
+                    Registra la entrada y salida de cilindros. Usa valores positivos para carga y negativos para descarga.
+                </p>
+                <div id="cageModalForm" class="cage-modal-grid">
+                    <!-- Dynamic inputs per product -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" id="cancelCageBtn">Cancelar</button>
+                <button class="primary-btn" id="saveCageBtn"><i class="fa-solid fa-floppy-disk"></i> Guardar Movimientos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Historial Completo Ventas -->
+    <div class="modal-overlay" id="allSalesModal">
+        <div class="modal-content glass-card" style="max-width: 1000px; height: 80vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h2>Historial Completo de Ventas</h2>
+                <button class="close-modal-btn" onclick="document.getElementById('allSalesModal').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="flex: 1; overflow-y: auto;">
+                <div id="fullTxList" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Full list here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="document.getElementById('allSalesModal').classList.remove('active')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Stock Detallado -->
+    <div class="modal-overlay" id="stockFullModal">
+        <div class="modal-content glass-card" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Inventario Detallado</h2>
+                <button class="close-modal-btn" onclick="document.getElementById('stockFullModal').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="fullStockGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <!-- Detailed stock cards -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="document.getElementById('stockFullModal').classList.remove('active')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Expanded Widget Modal -->
+    <div class="modal-overlay" id="expandedWidgetModal">
+        <div class="modal-content glass-card" style="max-width: 90vw; width: 90%; height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h2 id="expandedWidgetTitle">Expandido</h2>
+                <button class="close-modal-btn" onclick="closeExpandedWidget()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="expandedWidgetBody" style="flex: 1; overflow-y: auto; background: transparent; border: none; display: flex; flex-direction: column; padding: 0;">
+                <!-- Widget content moved here during expansion -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Perfil de Usuario -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content glass-card" style="max-width:420px;">
+            <div class="modal-header">
+                <h2 id="profileModalTitle">Perfil</h2>
+                <button class="close-modal-btn" onclick="document.getElementById('profileModal').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="profileModalBody"><!-- Dynamic content --></div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="document.getElementById('profileModal').classList.remove('active')">Cancelar</button>
+                <button class="primary-btn" id="profileSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gestionar Personal -->
+    <div class="modal-overlay" id="staffModal">
+        <div class="modal-content glass-card" style="max-width:500px;">
+            <div class="modal-header">
+                <h2>Gestionar Personal y Turnos</h2>
+                <button class="close-modal-btn" onclick="document.getElementById('staffModal').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="color:var(--text-secondary); font-size:13px; margin-bottom:15px;">Define quiénes están trabajando hoy y su rol actual.</p>
+                <div id="staffListInputs" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="document.getElementById('staffModal').classList.remove('active')">Cerrar</button>
+                <button class="primary-btn" onclick="saveStaffConfig()"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">OK</div>
+</div>
+
+<!-- Chatbot Widget (Visible siempre) -->
+<div class="chatbot-widget">
+    <button class="chatbot-btn" id="openChatBtn">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-robot"></i>
+                <span style="font-weight: 600;">Asistente GasControl</span>
+            </div>
+            <button class="close-modal-btn" id="closeChatBtn" style="color: white; font-size: 18px;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-bubble bot">¡Hola! Soy tu asistente de GasControl. ¿Necesitas pedir un cilindro o tienes alguna duda?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe un mensaje...">
+            <button class="chat-send-btn" id="sendChatBtn">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Alerta de Pedido (Para Repartidor) -->
+<div class="order-alert" id="orderAlert">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <i class="fa-solid fa-bell-exclamation fa-shake" style="font-size: 24px;"></i>
+        <div>
+            <div style="font-weight: 700;">¡NUEVO PEDIDO CHATBOT!</div>
+            <div id="alertDetails" style="font-size: 13px;">Cilindro 15kg - Calle Falsa 123</div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; width: 100%;">
+        <button class="secondary-btn" style="flex: 1; justify-content: center; background: rgba(255,255,255,0.2); border: none;" onclick="rejectOrder()">Rechazar</button>
+        <button class="primary-btn" style="flex: 1; justify-content: center; background: white; color: #ef4444;" onclick="acceptOrder()">Aceptar</button>
+    </div>
+</div>
+
+<!-- Recordatorio de Pedido Pendiente -->
+<div class="order-alert" id="reminderAlert" style="background: #f59e0b; border-color: rgba(255,255,255,0.4);">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <i class="fa-solid fa-clock fa-shake" style="font-size: 24px;"></i>
+        <div>
+            <div style="font-weight: 700;">¡PEDIDO RETRASADO!</div>
+            <div id="reminderDetails" style="font-size: 13px;">Llevas más de 30 min. con este pedido.</div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; width: 100%;">
+        <button class="primary-btn" style="flex: 1; justify-content: center; background: white; color: #f59e0b;" onclick="finishReminderOrder()">Marcar Entregado</button>
+    </div>
+</div>
+
+<script src="app.js?v=4.3"></script>
+</body>
+</html>
