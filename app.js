@@ -732,61 +732,92 @@ if (sendChatBtn) {
     chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleChatSubmit(); });
 }
 
-// Chat conversation state
-state._chat = { step: 'init', product: null, addr: null };
-
-const PRODUCTS_BOT = { '1': 'Cilindro 5 kg', '2': 'Cilindro 11 kg', '3': 'Cilindro 15 kg', '4': 'Cilindro 45 kg' };
+// Chat conversation state for Gemini
+state._chat = { history: [] };
 
 function handleChatSubmit() {
     const text = chatInput.value.trim();
     if (!text) return;
     appendMessage('user', text);
     chatInput.value = '';
-    setTimeout(() => processChatInput(text), 700);
+    
+    // UI State: thinking
+    chatInput.disabled = true;
+    if(sendChatBtn) sendChatBtn.disabled = true;
+    
+    const thinkingId = 'think_' + Date.now();
+    const thinkingBubble = document.createElement('div');
+    thinkingBubble.id = thinkingId;
+    thinkingBubble.className = 'chat-bubble bot';
+    thinkingBubble.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Escribiendo...';
+    chatBody.appendChild(thinkingBubble);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    setTimeout(() => processGeminiChat(text, thinkingId), 100);
 }
 
-function processChatInput(text) {
-    const t = text.toLowerCase().trim();
-    const step = state._chat.step;
+async function processGeminiChat(text, thinkingId) {
+    state._chat.history.push({
+        "role": "user",
+        "parts": [{ "text": text }]
+    });
 
-    // Respuestas amables a palabras de agradecimiento
-    const politeWords = ['gracias', 'muchas gracias', 'ok', 'vale', 'listo', 'perfecto', 'excelente', 'oka', 'gracias!'];
-    if (step === 'init' && politeWords.includes(t)) {
-        appendMessage('bot', '¡Gracias a ti por preferir GasControl! Estamos para servirte. 😊');
-        return;
-    }
+    try {
+        // Detecta si está en Netlify o en XAMPP/CPanel
+        const isNetlify = window.location.hostname.includes('netlify.app');
+        const endpoint = isNetlify ? '/.netlify/functions/chat' : 'api/ai_chat.php';
 
-    if (step === 'init') {
-        if (t.includes('precio') || t === '2') {
-            appendMessage('bot', '📋 Precios aproximados:\n• 5 kg  → $5.200\n• 11 kg → $9.800\n• 15 kg → $12.500\n• 45 kg → $32.000\n\nEscribe "pedir" para ordenar.');
-        } else if (t.includes('pedir') || t.includes('gas') || t === '1') {
-            appendMessage('bot', '¿Qué tamaño necesitas?\n\n1️⃣ 5 kg\n2️⃣ 11 kg\n3️⃣ 15 kg\n4️⃣ 45 kg');
-            state._chat.step = 'product';
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: state._chat.history })
+        });
+        const data = await res.json();
+        
+        const tb = document.getElementById(thinkingId);
+        if(tb) chatBody.removeChild(tb);
+        
+        if (data.error && !data.botResponse) {
+            appendMessage('bot', '❌ Error de conexión: ' + data.error);
         } else {
-            appendMessage('bot', '👋 ¡Hola! Soy el asistente de GasControl.\n\n¿Qué necesitas?\n\n1️⃣ Pedir gas\n2️⃣ Consultar precios');
+            const botText = data.botResponse;
+            
+            // Revisa si la IA generó el JSON de orden secreta
+            if (botText.includes('"action"') && botText.includes('"ORDER"')) {
+                try {
+                    let cleanJson = botText.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const orderData = JSON.parse(cleanJson);
+                    
+                    if (orderData.action === 'ORDER') {
+                        notifyRepartidor(orderData.product, orderData.address, orderData.phone);
+                        const confirmMsg = `✅ ¡Pedido confirmado!\n\n📦 ${orderData.product}\n📍 ${orderData.address}\n📞 ${orderData.phone}\n\n🚚 Un repartidor ha sido notificado y llegará pronto.`;
+                        appendMessage('bot', confirmMsg);
+                        
+                        state._chat.history.push({
+                            "role": "model",
+                            "parts": [{ "text": "Su pedido ha sido generado y enviado al repartidor con éxito. ¡Gracias por confiar en nosotros!" }]
+                        });
+                    }
+                } catch (e) {
+                    appendMessage('bot', '⚠️ Hubo un pequeño error procesando tu pedido, pero un vendedor lo revisará internamente.');
+                }
+            } else {
+                appendMessage('bot', botText);
+                state._chat.history.push({
+                    "role": "model",
+                    "parts": [{ "text": botText }]
+                });
+            }
         }
-    } else if (step === 'product') {
-        const prod = PRODUCTS_BOT[t] || Object.values(PRODUCTS_BOT).find(p =>
-            t.includes(p.toLowerCase().replace('cilindro ', '')));
-        if (prod) {
-            state._chat.product = prod;
-            appendMessage('bot', `Perfecto, ${prod} 👍\n\n📍 ¿Cuál es tu dirección de entrega?`);
-            state._chat.step = 'addr';
-        } else {
-            appendMessage('bot', '❌ Opción no válida.\n\n1️⃣ 5 kg\n2️⃣ 11 kg\n3️⃣ 15 kg\n4️⃣ 45 kg');
-        }
-    } else if (step === 'addr') {
-        state._chat.addr = text;
-        appendMessage('bot', `¡Gracias!\n\n📱 ¿Me puedes dar un número de teléfono de contacto?`);
-        state._chat.step = 'phone';
-    } else if (step === 'phone') {
-        state._chat.phone = text;
-        appendMessage('bot', `✅ ¡Pedido confirmado!\n\n📦 ${state._chat.product}\n📍 ${state._chat.addr}\n📞 ${text}\n\n🚚 Un repartidor ha sido notificado.\n⏳ El tiempo estimado de llegada es de 30 minutos.`);
-        notifyRepartidor(state._chat.product, state._chat.addr, text);
-        state._chat.step = 'init';
-    } else {
-        appendMessage('bot', 'Escribe "pedir" para ordenar gas o "precios" para ver tarifas.');
+    } catch (err) {
+        const tb = document.getElementById(thinkingId);
+        if(tb) chatBody.removeChild(tb);
+        appendMessage('bot', '❌ Error de red al tratar de contactar al servidor: ' + err.message);
     }
+    
+    chatInput.disabled = false;
+    if(sendChatBtn) sendChatBtn.disabled = false;
+    chatInput.focus();
 }
 
 function appendMessage(type, text) {
