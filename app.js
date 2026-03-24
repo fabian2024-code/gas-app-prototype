@@ -765,7 +765,11 @@ async function processGeminiChat(text, thinkingId) {
     try {
         // Detecta si está en Netlify o en XAMPP/CPanel
         const isNetlify = window.location.hostname.includes('netlify.app');
-        const endpoint = isNetlify ? '/.netlify/functions/chat' : 'api/ai_chat.php';
+        const isVercel = window.location.hostname.includes('vercel.app');
+        
+        let endpoint = 'api/ai_chat.php'; // Default para XAMPP/cPanel
+        if (isNetlify) endpoint = '/.netlify/functions/chat';
+        if (isVercel) endpoint = '/api/chat';
 
         const res = await fetch(endpoint, {
             method: 'POST',
