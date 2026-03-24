@@ -1,12 +1,20 @@
 {
-  "name": "GasControl POS",
+  "name": "GasControl Venta Pro",
   "short_name": "GasControl",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0d1117",
-  "theme_color": "#0d1117",
-  "description": "Punto de Venta para Distribución de Gas",
+  "theme_color": "#f97316",
+  "description": "Punto de Venta Profesional para Distribución de Gas",
+  "categories": ["business", "productivity"],
   "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3655/3655705.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3655/3655705.png",
       "sizes": "512x512",
