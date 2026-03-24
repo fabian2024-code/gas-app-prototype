@@ -16,7 +16,7 @@ exports.handler = async function(event, context) {
             };
         }
 
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
         
         const sysPrompt = `Eres el asistente inteligente de ventas de GasControl, distribuidor oficial de Gasco.
 Vendes cilindros de 5 kg ($5,200), 11 kg ($9,800), 15 kg ($12,500) y 45 kg ($32,000).
