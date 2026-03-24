@@ -22,24 +22,22 @@
 
 <!-- Login Section -->
 <div id="loginOverlay" class="login-page active">
-    <div class="login-wrapper">
-        <div class="login-brand-side">
-            <div class="brand-content">
-                <i class="fa-solid fa-fire-flame-curved main-logo-icon"></i>
-                <div class="brand-text">
+    <div class="login-wrapper mobile-optimized">
+        <div class="login-form-side">
+            
+            <div class="login-mobile-header">
+                <div class="login-logo-box">
+                    <i class="fa-solid fa-fire-flame-curved"></i>
+                </div>
+                <div class="login-brand-titles">
                     <h1>GasControl</h1>
-                    <p>Gestión Inteligente de Energía</p>
+                    <span>Gestión de Energía</span>
                 </div>
             </div>
-            <div class="brand-footer">
-                <p>&copy; 2026 Gasco - Innovación en cada entrega</p>
-            </div>
-        </div>
-        
-        <div class="login-form-side glass-card">
+
             <div class="form-header">
                 <h2>Bienvenido</h2>
-                <p>Ingresa tus credenciales para acceder al sistema</p>
+                <p>Ingresa tus credenciales para acceder</p>
             </div>
             
             <div class="form-body">
@@ -58,7 +56,10 @@
                     </div>
                 </div>
                 
+                <div class="login-hint">
+                    <i class="fa-solid fa-lightbulb"></i>
                     <span>Pista: La clave es la misma palabra que el usuario</span>
+                </div>
                 
                 <button class="primary-btn login-submit-btn" id="doLoginBtn">
                     <span>Iniciar Sesión</span>
@@ -67,9 +68,10 @@
                 
                 <div id="loginError" class="login-error-msg"></div>
                 
-                <div style="margin-top: 20px; text-align: center;">
-                    <button class="secondary-btn" id="loginChatBtn" style="background: none; border: 1px solid var(--border-color); width: 100%;">
-                        <i class="fa-solid fa-robot"></i> Pedir por Asistente (Bot)
+                <div style="margin-top: 25px; text-align: center;">
+                    <button class="secondary-btn" id="loginChatBtn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); width: 100%; justify-content: center; height: 48px; font-weight: 600;">
+                        <i class="fa-solid fa-robot" style="color: var(--text-secondary);"></i> 
+                        <span>Pedir por Asistente (Bot)</span>
                     </button>
                 </div>
             </div>

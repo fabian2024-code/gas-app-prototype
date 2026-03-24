@@ -742,32 +742,32 @@ body.light-mode .dropdown-item:hover { background: rgba(0,0,0,0.05); color: var(
     border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     backdrop-filter: var(--glass-blur); animation: loginFadeIn 0.6s ease-out;
 }
+.login-wrapper.mobile-optimized { max-width: 420px; min-height: auto; }
 
 @keyframes loginFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Brand Side */
-.login-brand-side {
-    flex: 1.2; background: linear-gradient(145deg, #f97316, #3b82f6);
-    padding: 60px 40px; display: flex; flex-direction: column; justify-content: space-between;
-    position: relative; overflow: hidden;
-}
-
-.login-brand-side::before {
-    content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
-    background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(40px);
-}
-
-.brand-content { position: relative; z-index: 2; }
-.main-logo-icon { font-size: 64px; color: white; margin-bottom: 20px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
-.brand-text h1 { font-size: 42px; font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 5px; }
-.brand-text p { color: rgba(255,255,255,0.8); font-size: 16px; font-weight: 500; }
-
-.brand-footer { color: rgba(255,255,255,0.6); font-size: 13px; }
-
 /* Form Side */
 .login-form-side {
-    flex: 1; background: rgba(13, 17, 23, 0.4); padding: 60px 45px;
+    flex: 1; background: rgba(13, 17, 23, 0.4); padding: 50px 40px;
     display: flex; flex-direction: column; justify-content: center;
+}
+
+.login-mobile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
+.login-logo-box {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), #fb923c);
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+.login-logo-box i { font-size: 24px; color: white; }
+.login-brand-titles { display: flex; flex-direction: column; }
+.login-brand-titles h1 {
+    font-size: 24px; font-weight: 800; color: white;
+    letter-spacing: -0.5px; margin: 0; line-height: 1.1;
+}
+.login-brand-titles span {
+    font-size: 11px; color: var(--primary); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 3px;
 }
 
 .form-header { margin-bottom: 35px; }
