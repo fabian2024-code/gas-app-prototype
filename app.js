@@ -795,8 +795,17 @@ async function processGeminiChat(text, thinkingId) {
                     const orderData = JSON.parse(cleanJson);
                     
                     if (orderData.action === 'ORDER') {
+                        // Persistir en Base de Datos Real
+                        fetch('api/save_bot_order.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(orderData)
+                        }).then(r => r.json()).then(res => {
+                            if (res.success) console.log("Orden guardada en DB con ID:", res.id);
+                        }).catch(err => console.error("Error guardando orden en DB:", err));
+
                         notifyRepartidor(orderData.product, orderData.address, orderData.phone);
-                        const confirmMsg = `✅ ¡Pedido confirmado!\n\n📦 ${orderData.product}\n📍 ${orderData.address}\n📞 ${orderData.phone}\n\n🚚 Un repartidor ha sido notificado y llegará pronto.`;
+                        const confirmMsg = `✅ ¡Pedido confirmado!\n\n📦 ${orderData.product}\n📍 ${orderData.address}\n📞 ${orderData.phone}\n💰 Total: ${orderData.total || 'Consultar al recibir'}\n\n🚚 Un repartidor ha sido notificado y llegará pronto.`;
                         appendMessage('bot', confirmMsg);
                         
                         state._chat.history.push({
