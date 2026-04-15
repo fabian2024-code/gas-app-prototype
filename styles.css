@@ -906,12 +906,15 @@ body.light-mode .dropdown-item:hover { background: rgba(0,0,0,0.05); color: var(
 
 /* ─── Order Alert (Repartidor) ────────────────────────────────────────── */
 .order-alert {
-    position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-150%);
-    background: #ef4444; color: white; padding: 18px 24px; border-radius: 15px;
-    display: flex; flex-direction: column; align-items: stretch; gap: 14px; z-index: 6000;
-    box-shadow: 0 15px 40px rgba(239,68,68,0.4); border: 2px solid rgba(255,255,255,0.2);
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    min-width: 320px;
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(200%);
+    background: rgba(239, 68, 68, 0.92);
+    backdrop-filter: blur(15px);
+    color: white; padding: 22px 28px; border-radius: 24px;
+    display: flex; flex-direction: column; align-items: stretch; gap: 16px; z-index: 40000;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(239, 68, 68, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-width: 350px;
 }
 .order-alert.active { transform: translateX(-50%) translateY(0); }
 

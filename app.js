@@ -789,31 +789,40 @@ async function processGeminiChat(text, thinkingId) {
             const botText = data.botResponse;
             
             // Revisa si la IA generó el JSON de orden secreta
-            if (botText.includes('"action"') && botText.includes('"ORDER"')) {
+            if (botText.includes('"action"') || botText.includes('"ORDER"')) {
                 try {
-                    let cleanJson = botText.replace(/```json/g, '').replace(/```/g, '').trim();
-                    const orderData = JSON.parse(cleanJson);
-                    
-                    if (orderData.action === 'ORDER') {
-                        // Persistir en Base de Datos Real
-                        fetch('api/save_bot_order.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(orderData)
-                        }).then(r => r.json()).then(res => {
-                            if (res.success) console.log("Orden guardada en DB con ID:", res.id);
-                        }).catch(err => console.error("Error guardando orden en DB:", err));
-
-                        notifyRepartidor(orderData.product, orderData.address, orderData.phone);
-                        const confirmMsg = `✅ ¡Pedido confirmado!\n\n📦 ${orderData.product}\n📍 ${orderData.address}\n📞 ${orderData.phone}\n💰 Total: ${orderData.total || 'Consultar al recibir'}\n\n🚚 Un repartidor ha sido notificado y llegará pronto.`;
-                        appendMessage('bot', confirmMsg);
+                    // Extracción robusta con Regex para encontrar el bloque de llaves { ... }
+                    const jsonMatch = botText.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const orderData = JSON.parse(jsonMatch[0]);
                         
-                        state._chat.history.push({
-                            "role": "model",
-                            "parts": [{ "text": "Su pedido ha sido generado y enviado al repartidor con éxito. ¡Gracias por confiar en nosotros!" }]
-                        });
+                        if (orderData.action === 'ORDER') {
+                            console.log("Detectada orden de IA:", orderData);
+                            
+                            // Persistir en Base de Datos Real
+                            fetch('api/save_bot_order.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(orderData)
+                            }).then(r => r.json()).then(res => {
+                                if (res.success) console.log("Orden guardada en DB con ID:", res.id);
+                                else console.error("Error en API de guardado:", res.error);
+                            }).catch(err => console.error("Error de red guardando orden:", err));
+
+                            notifyRepartidor(orderData.product, orderData.address, orderData.phone);
+                            const confirmMsg = `✅ ¡Pedido confirmado!\n\n📦 ${orderData.product}\n📍 ${orderData.address}\n📞 ${orderData.phone}\n💰 Total: ${orderData.total || 'Consultar al recibir'}\n\n🚚 Un repartidor ha sido notificado y llegará pronto.`;
+                            appendMessage('bot', confirmMsg);
+                            
+                            state._chat.history.push({
+                                "role": "model",
+                                "parts": [{ "text": "Su pedido ha sido generado y enviado al repartidor con éxito. ¡Gracias por confiar en nosotros!" }]
+                            });
+                        }
+                    } else {
+                        throw new Exception("No JSON block found");
                     }
                 } catch (e) {
+                    console.error("Error analizando pedido IA:", e, "Texto original:", botText);
                     appendMessage('bot', '⚠️ Hubo un pequeño error procesando tu pedido, pero un vendedor lo revisará internamente.');
                 }
             } else {
